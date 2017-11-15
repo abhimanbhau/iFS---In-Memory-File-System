@@ -12,6 +12,7 @@ public class CompressionProvider {
 
     public static byte[] CompressByteArray(byte[] data) throws IOException {
         Deflater deflater = new Deflater();
+        deflater.setLevel(Deflater.BEST_COMPRESSION);
         deflater.setInput(data);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
         deflater.finish();
