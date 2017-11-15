@@ -85,9 +85,23 @@
       <file leaf-file-name="Logger.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/io/github/abhimanbhau/logging/Logger.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="4" column="0" lean-forward="true" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
-              <folding />
+            <state relative-caret-position="435">
+              <caret line="29" column="0" lean-forward="true" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GlobalConstants.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/io/github/abhimanbhau/constants/GlobalConstants.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="180">
+              <caret line="12" column="17" lean-forward="false" selection-start-line="12" selection-start-column="17" selection-end-line="12" selection-end-column="17" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -111,6 +125,8 @@
       <list>
         <option value="$PROJECT_DIR$/src/io/github/abhimanbhau/FileSystemAPI.java" />
         <option value="$PROJECT_DIR$/src/io/github/abhimanbhau/publicapi/FileSystemAPI.java" />
+        <option value="$PROJECT_DIR$/src/io/github/abhimanbhau/constants/GlobalConstants.java" />
+        <option value="$PROJECT_DIR$/src/io/github/abhimanbhau/logging/Logger.java" />
       </list>
     </option>
   </component>
@@ -174,6 +190,13 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="abhimanbhau" type="462c0819:PsiDirectoryNode" />
               <item name="filesystemnative" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="iFS" type="b2602c69:ProjectViewProjectNode" />
+              <item name="iFS" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="abhimanbhau" type="462c0819:PsiDirectoryNode" />
+              <item name="logging" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="iFS" type="b2602c69:ProjectViewProjectNode" />
@@ -310,12 +333,12 @@
       <option name="presentableId" value="Default" />
       <updated>1510712001695</updated>
       <workItem from="1510712003735" duration="250000" />
-      <workItem from="1510712300032" duration="191000" />
+      <workItem from="1510712300032" duration="1217000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="441000" />
+    <option name="totallyTimeSpent" value="1467000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="22" width="1680" height="948" extended-state="6" />
@@ -437,11 +460,23 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/github/abhimanbhau/constants/GlobalConstants.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="12" column="17" lean-forward="false" selection-start-line="12" selection-start-column="17" selection-end-line="12" selection-end-column="17" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/io/github/abhimanbhau/logging/Logger.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="0" lean-forward="true" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="435">
+          <caret line="29" column="0" lean-forward="true" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
