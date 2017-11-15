@@ -1,10 +1,11 @@
+//Author: Abhiman S. Kolte
+
 package io.github.abhimanbhau.filesystemnative;
 
 import io.github.abhimanbhau.constants.Configuration;
 
 public class iFileSystem {
     Configuration currentConfig;
-
 
     public iFileSystem()
     {
