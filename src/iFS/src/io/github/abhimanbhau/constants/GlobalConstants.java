@@ -10,6 +10,8 @@ public class GlobalConstants {
     public static String DebugString = "{iFS} Debug: ";
     public static String ErrorString = "{iFS} Error: ";
 
+    public static String defaultUsername = "root";
+
     public static String getDateOrTime(boolean date)
     {
         if(date) {
