@@ -14,4 +14,8 @@ public class iFileSystem {
     public iFileSystem(Configuration config) {
         this.currentConfig = config;
     }
+
+    public void setup() {
+
+    }
 }
