@@ -7,6 +7,7 @@ class File {
     LinkedList<Integer> _fileAllocationTable;
     String _fileName;
     String _internalPath;
+    int _fileSize;
 
     boolean _isDirectory;
     String _lastAccessedTimeStamp;
