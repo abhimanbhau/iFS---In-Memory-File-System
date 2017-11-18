@@ -24,3 +24,6 @@ hs_err_pid*
 *.xml
 .DS_Store
 src/iFS/.idea/workspace.xml
+src/iFS/src/META-INF/MANIFEST.MF
+*.MF
+*.xml

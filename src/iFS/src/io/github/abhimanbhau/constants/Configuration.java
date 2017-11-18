@@ -12,6 +12,7 @@ public class Configuration {
     String ownerUsername;
 
     public Configuration() {
+        // MegaBytes
         size = 256;
         maxDirectoryName = 16;
         maxFileName = 16;
