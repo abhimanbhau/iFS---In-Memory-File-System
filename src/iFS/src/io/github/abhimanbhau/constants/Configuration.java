@@ -4,7 +4,10 @@ package io.github.abhimanbhau.constants;
 
 import io.github.abhimanbhau.utils.NativeHelperUtils;
 
+import java.util.TreeSet;
+
 public class Configuration {
+    public TreeSet<Integer> freeInodes = new TreeSet<Integer>();
     int size;
     int maxDirectoryName;
     int maxFileName;
@@ -13,7 +16,7 @@ public class Configuration {
 
     public Configuration() {
         // MegaBytes
-        size = 256;
+        size = 64;
         maxDirectoryName = 16;
         maxFileName = 16;
         nativeFilepath = NativeHelperUtils.getUserHomeDirectory();

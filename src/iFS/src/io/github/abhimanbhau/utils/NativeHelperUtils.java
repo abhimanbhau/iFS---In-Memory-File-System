@@ -16,7 +16,7 @@ public class NativeHelperUtils {
             DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yy-mm-dd");
             return timeFormatter.format(LocalDate.now());
         } else {
-            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH-mm-ss");
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yy-mm-dd-HH-mm-ss");
             return timeFormatter.format(LocalDateTime.now());
         }
     }

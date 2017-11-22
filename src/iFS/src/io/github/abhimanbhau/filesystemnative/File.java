@@ -9,7 +9,6 @@ class File {
     String _internalPath;
     int _fileSize;
 
-    boolean _isDirectory;
     String _lastAccessedTimeStamp;
     String _createdTimeStamp;
     String _modifiedTimeStamp;
