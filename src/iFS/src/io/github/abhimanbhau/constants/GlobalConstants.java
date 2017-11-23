@@ -13,4 +13,7 @@ public class GlobalConstants {
     public static String defaultUsername = "root";
     public static String pathEscape = "/";
 
+    public static int fileBlockSize = 4;
+    public static int twoPowerTen = 1024;
+
 }
