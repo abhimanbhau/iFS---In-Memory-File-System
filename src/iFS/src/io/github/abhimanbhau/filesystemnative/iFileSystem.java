@@ -16,56 +16,68 @@ import java.util.TreeSet;
 import java.util.zip.DataFormatException;
 
 public class iFileSystem {
-    public TreeSet<Integer> freeInodes = new TreeSet<Integer>();
-    Logger logger = Logger.getInstance();
-    Configuration currentConfig;
-    TreeSet<File> _fileSystem = new TreeSet<File>();
-    TreeSet<Integer> _freeBlocks = new TreeSet<>();
-
     byte[] _fileSystemBuffer;
+    private TreeSet<Integer> freeInodes = new TreeSet<Integer>();
+    private Logger logger = Logger.getInstance();
+    private Configuration currentConfig;
+    private TreeSet<File> _fileSystem = new TreeSet<File>();
+    private TreeSet<Integer> _freeBlocks = new TreeSet<>();
 
-    public iFileSystem(@NotNull Configuration config) throws IOException {
+    public iFileSystem(@NotNull Configuration config) {
         this.currentConfig = config;
-        setupFileSystem(config.getNativeFilepath());
+        try {
+            setupFileSystem(config.getNativeFilepath());
+        } catch (IOException e) {
+            logger.LogError(e.getMessage());
+        }
     }
 
-    public void setupInodes() {
+    private void setupInodes() {
         for (int i = 0; i < (currentConfig.getSize() * GlobalConstants.twoPowerTen / GlobalConstants.fileBlockSize);
              ++i) {
             freeInodes.add(i);
         }
     }
 
-    public void setupFreeFileBlocks() {
+    private void initStorageSpaceBuffer() {
+        _fileSystemBuffer = new byte[currentConfig.getSize() * GlobalConstants.twoPowerTen
+                * GlobalConstants.twoPowerTen];
+    }
+
+    private void setupFreeFileBlocks() {
         for (int i = 0; i < (currentConfig.getSize() * GlobalConstants.twoPowerTen / GlobalConstants.fileBlockSize);
              ++i) {
             _freeBlocks.add(i);
         }
     }
 
-    public void makeFileSystem() {
+    private void makeFileSystem() {
         setupInodes();
         setupFreeFileBlocks();
+        logger.LogDebug("Setup Inodes and Fileblocks done");
+        initStorageSpaceBuffer();
+        logger.LogDebug("Setup storage area done");
     }
 
-    public void openExistingFileSystem(String path) throws IOException {
+    private void openExistingFileSystem(String path) throws IOException {
         byte[] _fileSystemTempBuffer = NativeHelper.readFileSystemFromNativeFileSystem(path);
 
     }
 
-    public void finishFilySystem() {
+    public void finishFileSystem() {
         try {
             NativeHelper.writeFileSystemToNativeFileSystem(_fileSystemBuffer, currentConfig.getNativeFilepath());
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.LogError(e.getMessage());
         }
     }
 
-    public void setupFileSystem(String path) throws IOException {
+    private void setupFileSystem(String path) throws IOException {
         if (NativeHelperUtils.fileExists(path)) {
-            makeFileSystem();
-        } else {
             openExistingFileSystem(path);
+        } else {
+            logger.LogDebug("Creating new filesystem");
+            makeFileSystem();
         }
     }
 
@@ -164,7 +176,7 @@ public class iFileSystem {
         freeInodes.add(iNode);
     }
 
-    public File removeFileEntryFromTable(String path) {
+    private File removeFileEntryFromTable(String path) {
         File del = null;
         for (File name : _fileSystem) {
             if (name._internalPath.equals(path)) {
@@ -174,14 +186,14 @@ public class iFileSystem {
         return del;
     }
 
-    public void freeUsedFileBlocks(File f) {
+    private void freeUsedFileBlocks(File f) {
         Iterator iterator = f._fileAllocationTable.iterator();
         while (iterator.hasNext()) {
             _freeBlocks.add((Integer) iterator.next());
         }
     }
 
-    public File doesFileExist(String path) {
+    private File doesFileExist(String path) {
         File file = null;
         for (File f : _fileSystem) {
             if (f._internalPath.equals(path)) {

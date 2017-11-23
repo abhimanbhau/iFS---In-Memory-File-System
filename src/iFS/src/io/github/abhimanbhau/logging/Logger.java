@@ -20,8 +20,9 @@ public class Logger {
     private String path;
 
     private Logger() {
-        path = NativeHelperUtils.getUserHomeDirectory() + GlobalConstants.pathEscape + GlobalConstants.libName +
-                NativeHelperUtils.getDateOrTime(true) + NativeHelperUtils.getDateOrTime(false) + GlobalConstants.logFileExtension;
+        path = NativeHelperUtils.getUserHomeDirectory() + GlobalConstants.pathEscape + GlobalConstants.logPath +
+                GlobalConstants.pathEscape + GlobalConstants.libName + NativeHelperUtils.getDateOrTime(true) +
+                NativeHelperUtils.getDateOrTime(false) + GlobalConstants.logFileExtension;
         try {
             _buffer = new BufferedWriter(new FileWriter(path));
         } catch (IOException e) {
@@ -47,7 +48,7 @@ public class Logger {
 
     public void LogError(String error) {
         try {
-            _buffer.write(GlobalConstants.ErrorString + error);
+            _buffer.write(GlobalConstants.ErrorString + error + "\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -55,7 +56,7 @@ public class Logger {
 
     public void LogDebug(String debug) {
         try {
-            _buffer.write(GlobalConstants.DebugString + debug);
+            _buffer.write(GlobalConstants.DebugString + debug + "\n");
         } catch (IOException e) {
             e.printStackTrace();
         }

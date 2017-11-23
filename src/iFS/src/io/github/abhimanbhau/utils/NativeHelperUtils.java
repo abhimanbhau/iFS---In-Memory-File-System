@@ -3,7 +3,6 @@
 package io.github.abhimanbhau.utils;
 
 import java.io.File;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -15,7 +14,7 @@ public class NativeHelperUtils {
     public static String getDateOrTime(boolean date) {
         if (date) {
             DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yy-mm-dd");
-            return timeFormatter.format(LocalDate.now());
+            return timeFormatter.format(LocalDateTime.now());
         } else {
             DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yy-mm-dd-HH-mm-ss");
             return timeFormatter.format(LocalDateTime.now());

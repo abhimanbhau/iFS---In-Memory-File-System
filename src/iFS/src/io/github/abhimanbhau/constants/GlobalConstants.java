@@ -9,6 +9,7 @@ public class GlobalConstants {
 
     public static String DebugString = "{iFS} Debug: ";
     public static String ErrorString = "{iFS} Error: ";
+    public static String logPath = "iFS_Log";
 
     public static String defaultUsername = "root";
     public static String pathEscape = "/";

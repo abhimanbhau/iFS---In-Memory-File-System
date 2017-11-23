@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/iFS.iml" filepath="$PROJECT_DIR$/iFS.iml" />
+      <module fileurl="file://$PROJECT_DIR$/iFSDemo/iFSDemo.iml" filepath="$PROJECT_DIR$/iFSDemo/iFSDemo.iml" />
     </modules>
   </component>
 </project>
