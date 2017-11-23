@@ -16,4 +16,7 @@ public class GlobalConstants {
     public static int fileBlockSize = 4;
     public static int twoPowerTen = 1024;
 
+    public static int magicSplitLength = 8;
+    public static byte[] magicCode = {0, 0, 0, 0, 0, 0, 0, 0};
+
 }

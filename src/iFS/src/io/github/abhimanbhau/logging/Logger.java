@@ -19,29 +19,45 @@ public class Logger {
 
     private String path;
 
-    private Logger() throws IOException {
+    private Logger() {
         path = NativeHelperUtils.getUserHomeDirectory() + GlobalConstants.pathEscape + GlobalConstants.libName +
                 NativeHelperUtils.getDateOrTime(true) + NativeHelperUtils.getDateOrTime(false) + GlobalConstants.logFileExtension;
-        _buffer = new BufferedWriter(new FileWriter(path));
+        try {
+            _buffer = new BufferedWriter(new FileWriter(path));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public static Logger getInstance() throws IOException {
+    public static Logger getInstance() {
         if (_instance == null) {
             _instance = new Logger();
         }
         return _instance;
     }
 
-    public void Finish() throws IOException {
-        _buffer.flush();
-        _buffer.close();
+    public void Finish() {
+        try {
+            _buffer.flush();
+            _buffer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void LogError(String error) throws IOException {
-        _buffer.write(GlobalConstants.ErrorString + error);
+    public void LogError(String error) {
+        try {
+            _buffer.write(GlobalConstants.ErrorString + error);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void LogDebug(String debug) throws IOException {
-        _buffer.write(GlobalConstants.DebugString + debug);
+    public void LogDebug(String debug) {
+        try {
+            _buffer.write(GlobalConstants.DebugString + debug);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

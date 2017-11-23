@@ -12,4 +12,6 @@ class File {
     String _lastAccessedTimeStamp;
     String _createdTimeStamp;
     String _modifiedTimeStamp;
+
+    String md5;
 }

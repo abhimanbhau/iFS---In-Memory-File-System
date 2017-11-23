@@ -2,37 +2,37 @@
 
 package io.github.abhimanbhau.filesystemnative;
 
+import com.sun.istack.internal.NotNull;
 import io.github.abhimanbhau.constants.Configuration;
 import io.github.abhimanbhau.constants.GlobalConstants;
+import io.github.abhimanbhau.logging.Logger;
 import io.github.abhimanbhau.utils.CompressionProvider;
+import io.github.abhimanbhau.utils.EncryptionProvider;
 import io.github.abhimanbhau.utils.NativeHelperUtils;
 
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.TreeSet;
+import java.util.zip.DataFormatException;
 
 public class iFileSystem {
-
+    public TreeSet<Integer> freeInodes = new TreeSet<Integer>();
+    Logger logger = Logger.getInstance();
     Configuration currentConfig;
     TreeSet<File> _fileSystem = new TreeSet<File>();
     TreeSet<Integer> _freeBlocks = new TreeSet<>();
 
     byte[] _fileSystemBuffer;
 
-    public iFileSystem() {
-        currentConfig = new Configuration();
-        setupInodes();
-    }
-
-    public iFileSystem(Configuration config) {
+    public iFileSystem(@NotNull Configuration config) throws IOException {
         this.currentConfig = config;
-        setupInodes();
+        setupFileSystem(config.getNativeFilepath());
     }
 
     public void setupInodes() {
         for (int i = 0; i < (currentConfig.getSize() * GlobalConstants.twoPowerTen / GlobalConstants.fileBlockSize);
              ++i) {
-            currentConfig.freeInodes.add(i);
+            freeInodes.add(i);
         }
     }
 
@@ -44,11 +44,29 @@ public class iFileSystem {
     }
 
     public void makeFileSystem() {
+        setupInodes();
+        setupFreeFileBlocks();
+    }
+
+    public void openExistingFileSystem(String path) throws IOException {
+        byte[] _fileSystemTempBuffer = NativeHelper.readFileSystemFromNativeFileSystem(path);
 
     }
 
-    public void openFileSystem() {
+    public void finishFilySystem() {
+        try {
+            NativeHelper.writeFileSystemToNativeFileSystem(_fileSystemBuffer, currentConfig.getNativeFilepath());
+        } catch (IOException e) {
+            logger.LogError(e.getMessage());
+        }
+    }
 
+    public void setupFileSystem(String path) throws IOException {
+        if (NativeHelperUtils.fileExists(path)) {
+            makeFileSystem();
+        } else {
+            openExistingFileSystem(path);
+        }
     }
 
     public void createFile(byte[] _buffer, String path) throws IOException {
@@ -70,13 +88,11 @@ public class iFileSystem {
             }
         }
 
-        int iNode = currentConfig.freeInodes.first();
-        currentConfig.freeInodes.remove(currentConfig.freeInodes.first());
+        int iNode = freeInodes.first();
+        freeInodes.remove(freeInodes.first());
         File newFile = new File();
         newFile._iNode = iNode;
         newFile._fileSize = _compressedBuffer.length;
-        // newDirectory._fileAllocationTable = null;
-
         for (int i = 0; i < noOfFileBlocks; ++i) {
             newFile._fileAllocationTable.add(fileBlocks[i]);
         }
@@ -85,10 +101,11 @@ public class iFileSystem {
         newFile._createdTimeStamp = NativeHelperUtils.getDateOrTime(false);
         newFile._lastAccessedTimeStamp = NativeHelperUtils.getDateOrTime(false);
         newFile._modifiedTimeStamp = NativeHelperUtils.getDateOrTime(false);
+        newFile.md5 = EncryptionProvider.getMD5(_compressedBuffer);
         _fileSystem.add(newFile);
     }
 
-    public byte[] readFile(String path) {
+    public byte[] readFile(String path) throws IOException, DataFormatException {
         byte[] file;
         File f = doesFileExist(path);
         Iterator iterator = f._fileAllocationTable.iterator();
@@ -99,17 +116,14 @@ public class iFileSystem {
         while (iterator.hasNext()) {
             int currentBlock = (int) iterator.next();
             for (int i = 0; i < GlobalConstants.fileBlockSize * GlobalConstants.twoPowerTen; ++i) {
-                file[seekPointer + i] = _fileSystemBuffer[currentBlock + i];
+                file[seekPointer + i] = _fileSystemBuffer[currentBlock *
+                        (GlobalConstants.fileBlockSize * GlobalConstants.twoPowerTen) + i];
                 currentBytes++;
             }
             seekPointer = currentBytes;
             currentBytes = 0;
         }
-
-        // @ TODO:
-        // Decompress and read
-
-
+        file = CompressionProvider.DecompressByteArray(file);
         return file;
     }
 
@@ -118,8 +132,8 @@ public class iFileSystem {
             dirName = dirName.substring(0, currentConfig.getMaxDirectoryName() - 1);
         }
         File newDirectory = new File();
-        newDirectory._iNode = currentConfig.freeInodes.first();
-        currentConfig.freeInodes.remove(currentConfig.freeInodes.first());
+        newDirectory._iNode = freeInodes.first();
+        freeInodes.remove(freeInodes.first());
         newDirectory._fileName = dirName;
         newDirectory._fileSize = -1;
         newDirectory._fileAllocationTable = null;
@@ -127,7 +141,6 @@ public class iFileSystem {
         newDirectory._createdTimeStamp = NativeHelperUtils.getDateOrTime(false);
         newDirectory._lastAccessedTimeStamp = NativeHelperUtils.getDateOrTime(false);
         newDirectory._modifiedTimeStamp = NativeHelperUtils.getDateOrTime(false);
-
         _fileSystem.add(newDirectory);
     }
 
@@ -138,7 +151,7 @@ public class iFileSystem {
         if (fileToDelete != null) {
             _fileSystem.remove(fileToDelete);
         }
-        currentConfig.freeInodes.add(iNode);
+        freeInodes.add(iNode);
     }
 
     public void deleteDirectory(String path) {
@@ -148,7 +161,7 @@ public class iFileSystem {
         if (dirToDelete != null) {
             _fileSystem.remove(dirToDelete);
         }
-        currentConfig.freeInodes.add(iNode);
+        freeInodes.add(iNode);
     }
 
     public File removeFileEntryFromTable(String path) {

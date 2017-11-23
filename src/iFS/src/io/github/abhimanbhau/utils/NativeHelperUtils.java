@@ -2,6 +2,7 @@
 
 package io.github.abhimanbhau.utils;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -19,5 +20,13 @@ public class NativeHelperUtils {
             DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yy-mm-dd-HH-mm-ss");
             return timeFormatter.format(LocalDateTime.now());
         }
+    }
+
+    public static boolean fileExists(String path) {
+        File f = new File(path);
+        if (f.exists() && !f.isDirectory())
+            return true;
+        else
+            return false;
     }
 }

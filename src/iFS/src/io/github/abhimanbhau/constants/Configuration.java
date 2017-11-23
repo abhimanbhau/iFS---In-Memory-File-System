@@ -4,10 +4,7 @@ package io.github.abhimanbhau.constants;
 
 import io.github.abhimanbhau.utils.NativeHelperUtils;
 
-import java.util.TreeSet;
-
 public class Configuration {
-    public TreeSet<Integer> freeInodes = new TreeSet<Integer>();
     int size;
     int maxDirectoryName;
     int maxFileName;
