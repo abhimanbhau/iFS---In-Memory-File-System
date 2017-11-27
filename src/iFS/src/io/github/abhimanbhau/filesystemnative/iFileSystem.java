@@ -5,13 +5,15 @@ package io.github.abhimanbhau.filesystemnative;
 import com.sun.istack.internal.NotNull;
 import io.github.abhimanbhau.constants.Configuration;
 import io.github.abhimanbhau.constants.GlobalConstants;
-import io.github.abhimanbhau.exception.iFSDiskFullException;
+import io.github.abhimanbhau.exception.*;
 import io.github.abhimanbhau.logging.Logger;
 import io.github.abhimanbhau.utils.CompressionProvider;
 import io.github.abhimanbhau.utils.EncryptionProvider;
 import io.github.abhimanbhau.utils.NativeHelperUtils;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.zip.DataFormatException;
@@ -62,12 +64,13 @@ public class iFileSystem {
 
     private void openExistingFileSystem(String path) throws IOException {
         byte[] _fileSystemTempBuffer = NativeHelper.readFileSystemFromNativeFileSystem(path);
-
+        throw new NotImplementedException();
     }
 
     public void finishFileSystem() {
         try {
             NativeHelper.writeFileSystemToNativeFileSystem(_fileSystemBuffer, currentConfig.getNativeFilepath());
+
         } catch (Exception e) {
             logger.LogError(e.getMessage());
         }
@@ -76,6 +79,7 @@ public class iFileSystem {
     private void setupFileSystem(String path) throws IOException {
         if (NativeHelperUtils.fileExists(path)) {
             openExistingFileSystem(path);
+            logger.LogError(" Not implemented");
         } else {
             logger.LogDebug("Creating new filesystem");
             makeFileSystem();
@@ -119,7 +123,7 @@ public class iFileSystem {
         for (int i = 0; i < noOfFileBlocks; ++i) {
             newFile._fileAllocationTable.add(fileBlocks[i]);
         }
-
+        newFile._fileName = path;
         newFile._internalPath = path;
         newFile._createdTimeStamp = NativeHelperUtils.getDateOrTime(false);
         newFile._lastAccessedTimeStamp = NativeHelperUtils.getDateOrTime(false);
@@ -166,6 +170,10 @@ public class iFileSystem {
 
     public void deleteFile(String path) {
         File fileToDelete = removeFileEntryFromTable(path);
+        if (fileToDelete == null) {
+            logger.LogError(" File not found: " + path);
+            return;
+        }
         int iNode = fileToDelete._iNode;
         freeUsedFileBlocks(fileToDelete);
         if (fileToDelete != null) {
@@ -174,13 +182,26 @@ public class iFileSystem {
         freeInodes.add(iNode);
     }
 
-    public void deleteDirectory(String path) {
+    public void deleteDirectory(String path) throws iFSDirectoryNotEmptyException, iFSFileNotFoundException {
         // @TODO Delete everything with that directoryname in path
 
         //path = path.substring(path.lastIndexOf('/'), path.length() - 1);
-        deleteAllFilesInGivenDirectory(path);
+
+        // Does not work at this point
+        // deleteAllFilesInGivenDirectory(path);
+
+        // Get subfile count
+        if(getSubFileCount(path) > 1)
+        {
+            throw new iFSDirectoryNotEmptyException("Directory Not Empty");
+        }
 
         File dirToDelete = removeFileEntryFromTable(path);
+        if(dirToDelete == null)
+        {
+            logger.LogError("Directory not found");
+            throw new iFSFileNotFoundException("Directory not found");
+        }
         int iNode = dirToDelete._iNode;
         if (dirToDelete != null) {
             _fileSystem.remove(dirToDelete);
@@ -188,16 +209,16 @@ public class iFileSystem {
         freeInodes.add(iNode);
     }
 
-    private void deleteAllFilesInGivenDirectory(String path) {
-        for (File f : _fileSystem) {
-            if (f._internalPath.startsWith(path)) {
-                if (f._fileSize == -1)
-                    deleteDirectory(f._internalPath);
-                else
-                    deleteFile(f._internalPath);
-            }
-        }
-    }
+//    private void deleteAllFilesInGivenDirectory(String path) {
+//        for (File f : _fileSystem) {
+//            if (f._internalPath.startsWith(path)) {
+//                if (f._fileSize == -1)
+//                    deleteDirectory(f._internalPath);
+//                else
+//                    deleteFile(f._internalPath);
+//            }
+//        }
+//    }
 
     private File removeFileEntryFromTable(String path) {
         File del = null;
@@ -224,5 +245,42 @@ public class iFileSystem {
             }
         }
         return file;
+    }
+
+    public String[] listAllFiles() {
+        String[] files = new String[_fileSystem.size()];
+        int i = 0;
+        for (File f : _fileSystem) {
+            if (f._fileSize == -1)
+                continue;
+            files[i] = f._fileName;
+            i++;
+        }
+        return files;
+    }
+
+    public ArrayList<String> listAllDirectories() {
+        ArrayList<String> files = new ArrayList<>();
+        int i = 0;
+        for (File f : _fileSystem) {
+            if (f._fileSize == -1) {
+                files.add(f._fileName);
+                i++;
+            }
+        }
+        return files;
+    }
+
+    private int getSubFileCount(String path)
+    {
+        int counter = 0;
+        for(File f : _fileSystem)
+        {
+            if(f._internalPath.startsWith(path))
+            {
+                counter++;
+            }
+        }
+        return counter;
     }
 }

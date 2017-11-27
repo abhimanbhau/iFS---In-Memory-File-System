@@ -41,6 +41,10 @@ public class NativeHelper {
             } catch (IOException ex) {
             }
         }
+    }
+
+    public static void saveFileSystemState()
+    {
 
     }
 }
