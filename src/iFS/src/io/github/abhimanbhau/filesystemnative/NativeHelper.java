@@ -5,9 +5,8 @@ package io.github.abhimanbhau.filesystemnative;
 import io.github.abhimanbhau.logging.Logger;
 import org.apache.commons.io.FileUtils;
 
+import java.io.*;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 
 public class NativeHelper {
     public static byte[] readFileSystemFromNativeFileSystem(String path) {
@@ -24,10 +23,24 @@ public class NativeHelper {
     }
 
     public static void writeFileSystemToNativeFileSystem(byte[] _buffer, String path) {
+
+        // FileUtils.writeByteArrayToFile(new File(path), _buffer);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutput out = null;
         try {
-            FileUtils.writeByteArrayToFile(new File(path), _buffer);
+            out = new ObjectOutputStream(bos);
+            out.writeObject(_buffer);
+            out.flush();
+            byte[] bytesToWrite = bos.toByteArray();
+            FileUtils.writeByteArrayToFile(new File(path), bytesToWrite);
         } catch (IOException e) {
             Logger.getInstance().LogError(e.getMessage());
+        } finally {
+            try {
+                bos.close();
+            } catch (IOException ex) {
+            }
         }
+
     }
 }

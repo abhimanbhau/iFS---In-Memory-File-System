@@ -5,6 +5,7 @@ package io.github.abhimanbhau.filesystemnative;
 import com.sun.istack.internal.NotNull;
 import io.github.abhimanbhau.constants.Configuration;
 import io.github.abhimanbhau.constants.GlobalConstants;
+import io.github.abhimanbhau.exception.iFSDiskFullException;
 import io.github.abhimanbhau.logging.Logger;
 import io.github.abhimanbhau.utils.CompressionProvider;
 import io.github.abhimanbhau.utils.EncryptionProvider;
@@ -16,7 +17,7 @@ import java.util.TreeSet;
 import java.util.zip.DataFormatException;
 
 public class iFileSystem {
-    byte[] _fileSystemBuffer;
+    private byte[] _fileSystemBuffer;
     private TreeSet<Integer> freeInodes = new TreeSet<Integer>();
     private Logger logger = Logger.getInstance();
     private Configuration currentConfig;
@@ -81,13 +82,17 @@ public class iFileSystem {
         }
     }
 
-    public void createFile(byte[] _buffer, String path) throws IOException {
-        // Compress, Add the buffer to the file system buffer, setup iNodes and stuff
-
-        byte[] _compressedBuffer = CompressionProvider.CompressByteArray(_buffer);
+    public void createFile(byte[] _buffer, String path) throws IOException, iFSDiskFullException {
         int noOfFileBlocks;
+        byte[] _compressedBuffer = CompressionProvider.CompressByteArray(_buffer);
         float blocks = _compressedBuffer.length / (GlobalConstants.fileBlockSize * GlobalConstants.twoPowerTen);
         noOfFileBlocks = (int) Math.ceil(blocks);
+        if (noOfFileBlocks == 0)
+            noOfFileBlocks += 1;
+        if (noOfFileBlocks > _freeBlocks.size()) {
+            throw new io.github.abhimanbhau.exception.iFSDiskFullException(" DISK SPACE FULL");
+        }
+        // Compress, Add the buffer to the file system buffer, setup iNodes and stuff
 
         int[] fileBlocks = new int[noOfFileBlocks];
         for (int i = 0; i < noOfFileBlocks; ++i) {
@@ -96,7 +101,13 @@ public class iFileSystem {
         }
         for (int i = 0; i < noOfFileBlocks; ++i) {
             for (int j = 0; j < GlobalConstants.fileBlockSize * GlobalConstants.twoPowerTen; ++j) {
-                _fileSystemBuffer[fileBlocks[i] + j] = _compressedBuffer[i + j];
+                if (j >= _compressedBuffer.length) {
+                    _fileSystemBuffer[(fileBlocks[i] * GlobalConstants.fileBlockSize * GlobalConstants.twoPowerTen) + j]
+                            = ((byte) 0);
+                    continue;
+                }
+                _fileSystemBuffer[(fileBlocks[i] * GlobalConstants.fileBlockSize * GlobalConstants.twoPowerTen) + j]
+                        = _compressedBuffer[(i * GlobalConstants.fileBlockSize * GlobalConstants.twoPowerTen) + j];
             }
         }
 
@@ -124,16 +135,13 @@ public class iFileSystem {
         int fileSize = f._fileSize;
         file = new byte[fileSize];
         int seekPointer = 0;
-        int currentBytes = 0;
         while (iterator.hasNext()) {
             int currentBlock = (int) iterator.next();
             for (int i = 0; i < GlobalConstants.fileBlockSize * GlobalConstants.twoPowerTen; ++i) {
                 file[seekPointer + i] = _fileSystemBuffer[currentBlock *
                         (GlobalConstants.fileBlockSize * GlobalConstants.twoPowerTen) + i];
-                currentBytes++;
             }
-            seekPointer = currentBytes;
-            currentBytes = 0;
+            seekPointer = seekPointer + (GlobalConstants.fileBlockSize * GlobalConstants.twoPowerTen);
         }
         file = CompressionProvider.DecompressByteArray(file);
         return file;
@@ -167,13 +175,28 @@ public class iFileSystem {
     }
 
     public void deleteDirectory(String path) {
+        // @TODO Delete everything with that directoryname in path
+
         //path = path.substring(path.lastIndexOf('/'), path.length() - 1);
+        deleteAllFilesInGivenDirectory(path);
+
         File dirToDelete = removeFileEntryFromTable(path);
         int iNode = dirToDelete._iNode;
         if (dirToDelete != null) {
             _fileSystem.remove(dirToDelete);
         }
         freeInodes.add(iNode);
+    }
+
+    private void deleteAllFilesInGivenDirectory(String path) {
+        for (File f : _fileSystem) {
+            if (f._internalPath.startsWith(path)) {
+                if (f._fileSize == -1)
+                    deleteDirectory(f._internalPath);
+                else
+                    deleteFile(f._internalPath);
+            }
+        }
     }
 
     private File removeFileEntryFromTable(String path) {

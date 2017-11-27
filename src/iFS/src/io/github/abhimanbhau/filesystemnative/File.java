@@ -2,7 +2,7 @@ package io.github.abhimanbhau.filesystemnative;
 
 import java.util.LinkedList;
 
-class File {
+class File implements Comparable<File> {
     int _iNode;
     LinkedList<Integer> _fileAllocationTable;
     String _fileName;
@@ -14,4 +14,15 @@ class File {
     String _modifiedTimeStamp;
 
     String md5;
+
+    public File() {
+        _fileAllocationTable = new LinkedList<>();
+    }
+
+    @Override
+    public int compareTo(File o) {
+        if (o == null)
+            return 0;
+        return this._internalPath.compareTo(o._internalPath);
+    }
 }
