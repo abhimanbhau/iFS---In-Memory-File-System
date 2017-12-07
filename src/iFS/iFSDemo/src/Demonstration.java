@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.zip.DataFormatException;
 
 public class Demonstration {
     public static void main(String[] args) throws IOException {
@@ -35,7 +36,7 @@ public class Demonstration {
         }
 
         fileSystem.deleteFile("/abe.ppts");
-        fileSystem.deleteFile("/text.txt");
+        //fileSystem.deleteFile("/text.txt");
         fileSystem.deleteFile("/project.pdf");
 
         System.out.println("\n\nAfter Deleting");
@@ -104,11 +105,16 @@ public class Demonstration {
         {
             System.out.println(s);
         }
-//        byte[] readFile = fileSystem.readFile();
+        try {
+            byte[] readFile = fileSystem.readFile("/text.txt");
+            System.out.println(new String(readFile));
+        } catch (DataFormatException e) {
+            System.out.println(e.getMessage());
+        }
 
-        System.out.println("\n\n\nLOL");
+        System.out.println("\n\n\nfinish");
         fileSystem.finishFileSystem();
-        System.out.println("LOL");
+        //System.out.println("fin");
         Logger.getInstance().Finish();
     }
 }

@@ -139,11 +139,17 @@ public class iFileSystem {
         int fileSize = f._fileSize;
         file = new byte[fileSize];
         int seekPointer = 0;
+        int bytesRead = 0;
         while (iterator.hasNext()) {
             int currentBlock = (int) iterator.next();
             for (int i = 0; i < GlobalConstants.fileBlockSize * GlobalConstants.twoPowerTen; ++i) {
+                if(bytesRead >= f._fileSize)
+                {
+                    continue;
+                }
                 file[seekPointer + i] = _fileSystemBuffer[currentBlock *
                         (GlobalConstants.fileBlockSize * GlobalConstants.twoPowerTen) + i];
+                bytesRead++;
             }
             seekPointer = seekPointer + (GlobalConstants.fileBlockSize * GlobalConstants.twoPowerTen);
         }
